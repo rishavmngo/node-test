@@ -1,0 +1,36 @@
+GET http://localhost:3000/auth
+
+
+
+####
+GET http://localhost:3000/resetIdSequence
+
+
+###
+
+POST http://localhost:3000/auth/login
+Content-Type:application/json
+
+{
+	"email": "rishavinmngo@gmail.com",
+	"password": "1282323434233"
+}
+
+
+
+###
+POST http://localhost:3000/auth/register
+Content-Type:application/json
+
+{
+	"name": "rishav raj",
+	"email": "rishavinmngo@gmail.com",
+	"password": "123456789"
+}
+
+
+###
+GET http://localhost:3000/auth/google/logout
+
+
+##
