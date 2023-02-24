@@ -21,8 +21,10 @@ users.getByEmail = async (email) => {
 
   try {
     const result = await db.query(q, [email])
-    return response(result.rows[0], null)
+    if (result.rows.length > 0) return response(result.rows[0], null)
+    else return response(null, new error('User not found', 404))
   } catch (err) {
+    console.log('error', err)
     return response(null, err)
   }
 }

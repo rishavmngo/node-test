@@ -1,9 +1,31 @@
 const express = require('express')
 const authRouter = require('./routes/auth.route.js')
 const db = require('./models/connection.js')
+const cors = require('cors')
+const cookieParser = require('cookie-parser')
+const passport = require('passport')
+const GoogleStrategy = require('passport-google-oauth20').Strategy
 
 const app = express()
 
+// passport.serializeUser((user, done) => done(null, user))
+// passport.deserializeUser((user, done) => done(null, user))
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID:
+        '503989483804-he67tbihquhja53s8mg50tt8ng7radai.apps.googleusercontent.com',
+      clientSecret: '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',
+      callbackURL: 'http://localhost:3000/auth/google/success',
+      // passReqToCallback: true,
+    },
+    function (request, accessToken, refreshToken, profile, done) {
+      done(null, profile)
+    }
+  )
+)
+app.use(cookieParser())
+app.use(cors())
 app.use(express.json())
 app.use('/auth', authRouter)
 
