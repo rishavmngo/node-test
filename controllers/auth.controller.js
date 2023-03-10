@@ -5,28 +5,30 @@ const { loginSchema, registerSchema } = require('../models/users.schema.js')
 const bcrypt = require('bcrypt')
 const config = require('../config/config.js')
 
-auth.login = async (req, res, next) => {
+auth.login = async (req, res) => {
   const { email, password } = req.body
 
   //validation of data from request
   try {
     await loginSchema.validateAsync({ email, password })
   } catch (err) {
-    return res.send(err.details[0].message)
+    return res.send({ error: true, message: err.details[0].message })
   }
 
   try {
     const { data, error } = await users.getByEmail(email)
-    if (!data) return res.status(error.code).send({ message: error.message })
+    console.log(data)
+    if (!data)
+      return res
+        .status(error.code)
+        .send({ error: true, message: error.message })
     const isPasswordMatched = await bcrypt.compare(password, data.password)
-    console.log(isPasswordMatched, data.password, password)
     if (!isPasswordMatched)
-      return res.status(403).send({ message: 'wrong password' })
+      return res.status(403).send({ error: true, message: 'wrong password' })
     const token = jwt.createAccessToken(data.uid)
-    res.send(token)
+    res.send({ error: false, data: token })
   } catch (err) {
-    console.log(err)
-    return res.status(400).send(err)
+    return res.status(400).send({ error: true, message: err })
   }
 }
 
@@ -38,29 +40,31 @@ auth.register = async (req, res) => {
   try {
     await registerSchema.validateAsync(req.body)
   } catch (err) {
-    console.log(err)
-    return res.send(err.details[0].message)
+    return res.send({ error: true, message: err.details[0].message })
   }
   try {
     const { data: isUserExist } = await users.getByEmail(email)
 
-    if (!!isUserExist) return res.status(409).send('Email already exist')
+    if (!!isUserExist)
+      return res
+        .status(409)
+        .send({ error: true, message: 'Email already exist' })
 
     try {
       hashedPassword = await bcrypt.hash(password, config.bcryptSaltRounds)
     } catch (err) {
-      console.log('from bcrypt', err)
-      return res.status(500).send({ message: 'internal server error' })
+      return res
+        .status(500)
+        .send({ error: true, message: 'internal server error' })
     }
 
     const { data: user } = await users.addUser(name, email, hashedPassword)
 
     user.accessToken = jwt.createAccessToken(user.uid)
-    console.log(user)
-    res.send(user)
+    res.send({ error: false, data: user })
   } catch (err) {
     console.error(err)
-    res.status(500).send({ message: 'Internal server error' })
+    res.status(500).send({ error: true, message: 'Internal server error' })
   }
 }
 
@@ -77,7 +81,7 @@ auth.google = async (req, res) => {
     user.accessToken = jwt.createAccessToken(user.uid)
 
     res.cookie('cookieName', user, { maxAge: 900000, httpOnly: false })
-    res.redirect('http://localhost:3001')
+    res.redirect(config.clientAddress)
   } catch (err) {
     console.error(err)
     res.status(500).send({ message: 'Internal server error' })

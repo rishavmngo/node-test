@@ -13,7 +13,15 @@ Content-Type:application/json
 
 {
 	"email": "rishavinmngo@gmail.com",
-	"password": "12345678"
+	"password": "123456789"
+}
+
+
+POST http://localhost:3000/users/getById
+Content-Type:application/json
+
+{
+	"uid": 5 
 }
 
 

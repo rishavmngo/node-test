@@ -29,4 +29,16 @@ users.getByEmail = async (email) => {
   }
 }
 
+users.getById = async (uid) => {
+  const q = `SELECT * FROM users where uid=$1`
+
+  try {
+    const result = await db.query(q, [uid])
+    if (result.rows.length > 0) return response(result.rows[0], null)
+    else return response(null, { message: 'user not found' })
+  } catch (err) {
+    console.log('error', err)
+    return response(null, err)
+  }
+}
 module.exports = users

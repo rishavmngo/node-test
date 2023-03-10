@@ -11,11 +11,4 @@ router.post('/register', auth.register)
 
 router.use('/google', googleAuth)
 
-router.get('/logout', (req, res) => {
-  // req.logout()
-  res.clearCookie('connect.sid')
-  res.clearCookie('passport')
-  res.clearCookie('__Host-GAPS')
-  res.redirect('http://localhost:3001')
-})
 module.exports = router
