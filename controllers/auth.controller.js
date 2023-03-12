@@ -88,4 +88,14 @@ auth.google = async (req, res) => {
   }
 }
 
+auth.verfiyToken = async (req, res) => {
+  const { token } = req.body
+
+  if (!token)
+    res.status(400).json({ error: true, message: 'Token is required' })
+
+  try {
+  } catch (error) {}
+}
+
 module.exports = auth

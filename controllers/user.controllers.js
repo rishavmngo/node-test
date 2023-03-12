@@ -2,8 +2,10 @@ user = {}
 const users = require('../models/users.model.js')
 
 user.getById = async (req, res) => {
-  const { uid } = req.body
-  console.log(uid)
+  const uid = req.id
+
+  if (!uid)
+    return res.status(400).json({ error: true, message: 'Not Authorized' })
 
   try {
     const { error, data } = await users.getById(uid)
